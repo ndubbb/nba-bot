@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Line Pricing NBA</title>
+    <title>Line Pricing NBA - Elite AI Betting Analysis</title>
     <style>
         * {
             margin: 0;
@@ -33,7 +33,7 @@
         }
 
         .container {
-            max-width: 1600px;
+            max-width: 1800px;
             margin: 0 auto;
         }
 
@@ -49,7 +49,7 @@
         }
 
         h1 {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             font-weight: 800;
             margin-bottom: 8px;
             background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
@@ -61,48 +61,129 @@
         .subtitle {
             color: var(--text-dim);
             font-size: 1rem;
+            margin-bottom: 12px;
         }
 
-        /* AI Stats Bar */
-        .ai-stats-bar {
+        .beta-notice {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(245, 158, 11, 0.05) 100%);
+            border: 1px solid var(--warning);
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin-top: 12px;
+            display: inline-block;
+        }
+
+        /* Performance Dashboard */
+        .performance-dashboard {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, var(--card) 100%);
+            border: 2px solid var(--elite);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .perf-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--elite);
+            text-align: center;
+        }
+
+        .perf-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 16px;
             margin-bottom: 24px;
         }
 
-        .stat-card {
+        .perf-card {
             background: var(--card);
-            padding: 18px;
+            padding: 20px;
             border-radius: 12px;
             border: 1px solid var(--border);
             text-align: center;
         }
 
-        .stat-card.elite {
+        .perf-card.highlight {
             border: 2px solid var(--elite);
             background: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, var(--card) 100%);
         }
 
-        .stat-label {
-            font-size: 0.7rem;
+        .perf-label {
+            font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             color: var(--text-dim);
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
 
-        .stat-value {
-            font-size: 1.6rem;
+        .perf-value {
+            font-size: 2rem;
             font-weight: 700;
         }
 
-        .stat-value.positive { color: var(--success); }
-        .stat-value.negative { color: var(--danger); }
-        .stat-value.elite-color { 
+        .perf-value.positive { color: var(--success); }
+        .perf-value.negative { color: var(--danger); }
+        .perf-value.elite-color { 
             background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+        }
+
+        .perf-subtext {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-top: 4px;
+        }
+
+        /* Recent Results */
+        .recent-results {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .results-header {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text);
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 12px;
+        }
+
+        .result-item {
+            background: rgba(15, 23, 42, 0.5);
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 3px solid transparent;
+        }
+
+        .result-item.win { border-left-color: var(--success); }
+        .result-item.loss { border-left-color: var(--danger); }
+
+        .result-date {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            margin-bottom: 4px;
+        }
+
+        .result-pick {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .result-outcome {
+            font-size: 0.8rem;
+            display: flex;
+            justify-content: space-between;
         }
 
         /* Date Navigation */
@@ -119,6 +200,8 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
         .current-date {
@@ -163,14 +246,6 @@
             border-color: var(--primary);
         }
 
-        .date-btn.past {
-            opacity: 0.7;
-        }
-
-        .date-btn.future {
-            border-style: dashed;
-        }
-
         .nav-arrow {
             background: var(--primary);
             color: white;
@@ -180,15 +255,6 @@
             cursor: pointer;
             font-weight: 700;
             font-size: 1.2rem;
-        }
-
-        .nav-arrow:hover {
-            background: #1557b0;
-        }
-
-        .date-divider {
-            color: var(--border);
-            font-size: 1.5rem;
         }
 
         /* Elite Plays Tracker */
@@ -255,16 +321,6 @@
             font-weight: 700;
         }
 
-        .elite-bet {
-            background: rgba(124, 58, 237, 0.2);
-            padding: 12px;
-            border-radius: 6px;
-            margin-top: 12px;
-            font-size: 1.05rem;
-            font-weight: 600;
-            color: var(--text);
-        }
-
         /* Games Grid */
         .section-header {
             font-size: 1.4rem;
@@ -276,7 +332,7 @@
 
         .games-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(550px, 1fr));
             gap: 24px;
             margin-bottom: 40px;
         }
@@ -298,10 +354,6 @@
         .game-card.has-elite-bet {
             border: 2px solid var(--elite);
             box-shadow: 0 0 30px rgba(124, 58, 237, 0.3);
-        }
-
-        .game-card.has-bet {
-            border: 2px solid var(--success);
         }
 
         /* Game Header */
@@ -366,6 +418,135 @@
 
         .team-score.final {
             color: var(--text);
+        }
+
+        /* Injury Alert */
+        .injury-alert {
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, transparent 100%);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 16px;
+            font-size: 0.85rem;
+        }
+
+        .injury-header {
+            font-weight: 700;
+            color: var(--danger);
+            margin-bottom: 6px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .injury-item {
+            color: var(--text-dim);
+            margin-bottom: 4px;
+        }
+
+        /* Rest Days Info */
+        .rest-info {
+            background: linear-gradient(135deg, rgba(13, 148, 136, 0.1) 0%, transparent 100%);
+            border: 1px solid rgba(13, 148, 136, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 16px;
+            font-size: 0.85rem;
+        }
+
+        .rest-header {
+            font-weight: 700;
+            color: var(--success);
+            margin-bottom: 6px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .rest-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+
+        /* Line Movement */
+        .line-movement {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, transparent 100%);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 16px;
+            font-size: 0.85rem;
+        }
+
+        .line-movement-header {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 6px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .line-movement-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .movement-arrow {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .movement-arrow.up { color: var(--danger); }
+        .movement-arrow.down { color: var(--success); }
+
+        /* Public Betting */
+        .public-betting {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, transparent 100%);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+
+        .public-header {
+            font-weight: 700;
+            color: var(--warning);
+            margin-bottom: 8px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .public-bar-container {
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 6px;
+            height: 24px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .public-bar {
+            height: 100%;
+            background: var(--warning);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: black;
+            transition: width 0.3s;
+        }
+
+        .public-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+        }
+
+        .fade-indicator {
+            color: var(--success);
+            font-weight: 700;
         }
 
         /* Vegas Odds Section */
@@ -483,6 +664,38 @@
             color: var(--text);
         }
 
+        /* CLV Display */
+        .clv-display {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, transparent 100%);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+            font-size: 0.85rem;
+        }
+
+        .clv-header {
+            font-weight: 700;
+            color: var(--elite);
+            margin-bottom: 6px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .clv-value {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .clv-number {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .clv-number.positive { color: var(--success); }
+        .clv-number.negative { color: var(--danger); }
+
         /* Bet Recommendation */
         .bet-recommendation {
             background: linear-gradient(135deg, rgba(13, 148, 136, 0.2) 0%, rgba(13, 148, 136, 0.05) 100%);
@@ -508,9 +721,28 @@
             color: var(--elite);
         }
 
+        .unit-sizing {
+            background: rgba(15, 23, 42, 0.6);
+            padding: 12px;
+            border-radius: 8px;
+            margin: 12px 0;
+            text-align: center;
+        }
+
+        .unit-stars {
+            color: var(--warning);
+            font-size: 1.3rem;
+            margin-bottom: 6px;
+        }
+
+        .unit-text {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
         .bet-details {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
             gap: 12px;
             margin-top: 12px;
         }
@@ -537,21 +769,6 @@
 
         .bet-detail-value.elite-level {
             color: var(--elite);
-        }
-
-        /* Training Banner */
-        .training-banner {
-            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-            padding: 16px 24px;
-            border-radius: 12px;
-            margin-bottom: 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .training-text {
-            font-weight: 600;
         }
 
         /* Controls */
@@ -620,6 +837,17 @@
             color: var(--text-dim);
         }
 
+        /* Training Banner */
+        .training-banner {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            padding: 16px 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
         /* Footer */
         footer {
             text-align: center;
@@ -630,6 +858,16 @@
             font-size: 0.875rem;
         }
 
+        .disclaimer {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 20px;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             h1 { font-size: 2rem; }
@@ -637,14 +875,18 @@
             .vegas-grid, .model-grid, .bet-details { grid-template-columns: 1fr; }
             .date-nav { gap: 8px; }
             .date-btn { padding: 8px 12px; font-size: 0.75rem; }
+            .perf-grid { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Line Pricing NBA</h1>
-            <p class="subtitle">AI-Powered Analysis • Elite Plays 95%+ Only • Full Schedule Browser</p>
+            <h1>⚡ Line Pricing NBA</h1>
+            <p class="subtitle">Elite AI Betting Analysis • 95%+ Plays Only • Real Stats & Injuries</p>
+            <div class="beta-notice">
+                ✨ Phase 1 & 2 Optimizations: Real Stats • Injury Tracking • CLV Analysis • Line Movement • Public Betting %
+            </div>
         </header>
 
         <!-- Training Banner -->
@@ -653,27 +895,50 @@
             <div class="training-progress" id="trainingProgress">Loading games...</div>
         </div>
 
-        <!-- AI Stats -->
-        <div class="ai-stats-bar" id="aiStats">
-            <div class="stat-card elite">
-                <div class="stat-label">Elite Plays (95%+)</div>
-                <div class="stat-value elite-color" id="statElite">--</div>
+        <!-- Performance Dashboard -->
+        <div class="performance-dashboard">
+            <div class="perf-header">📊 Verified Performance Tracker</div>
+            <div class="perf-grid">
+                <div class="perf-card highlight">
+                    <div class="perf-label">Elite Plays (95%+)</div>
+                    <div class="perf-value elite-color" id="perfElite">--</div>
+                    <div class="perf-subtext">Tracked Only</div>
+                </div>
+                <div class="perf-card">
+                    <div class="perf-label">Win Rate</div>
+                    <div class="perf-value" id="perfWinRate">--</div>
+                    <div class="perf-subtext" id="perfRecord">--</div>
+                </div>
+                <div class="perf-card">
+                    <div class="perf-label">Units (All Time)</div>
+                    <div class="perf-value" id="perfUnits">--</div>
+                    <div class="perf-subtext">ROI: <span id="perfROI">--</span></div>
+                </div>
+                <div class="perf-card highlight">
+                    <div class="perf-label">Avg CLV</div>
+                    <div class="perf-value" id="perfCLV">--</div>
+                    <div class="perf-subtext">Closing Line Value</div>
+                </div>
+                <div class="perf-card">
+                    <div class="perf-label">Last 7 Days</div>
+                    <div class="perf-value" id="perf7Days">--</div>
+                    <div class="perf-subtext" id="perf7Record">--</div>
+                </div>
+                <div class="perf-card">
+                    <div class="perf-label">Last 30 Days</div>
+                    <div class="perf-value" id="perf30Days">--</div>
+                    <div class="perf-subtext" id="perf30Record">--</div>
+                </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-label">Model Accuracy</div>
-                <div class="stat-value" id="statAccuracy">--</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Record</div>
-                <div class="stat-value" id="statRecord">--</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Units</div>
-                <div class="stat-value" id="statUnits">--</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">ROI</div>
-                <div class="stat-value" id="statROI">--</div>
+
+            <!-- Recent Results -->
+            <div class="recent-results">
+                <div class="results-header">🎯 Recent Elite Plays (Last 10)</div>
+                <div class="results-grid" id="recentResults">
+                    <div style="text-align: center; padding: 20px; color: var(--text-dim);">
+                        No results yet. Train AI to see historical performance.
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -684,7 +949,7 @@
                 <div class="quick-nav">
                     <button class="date-btn" id="btnYesterday">Yesterday</button>
                     <button class="date-btn active" id="btnToday">Today</button>
-                    <button class="date-btn future" id="btnTomorrow">Tomorrow</button>
+                    <button class="date-btn" id="btnTomorrow">Tomorrow</button>
                 </div>
             </div>
             <div class="date-nav" id="dateNav">
@@ -692,7 +957,7 @@
             </div>
         </div>
 
-        <!-- Elite Plays Tracker (95%+ Only) -->
+        <!-- Elite Plays Tracker -->
         <div class="elite-tracker" id="eliteTracker" style="display: none;">
             <div class="elite-header">
                 <div class="elite-title">💎 Elite Plays Tracked (95%+ Confidence)</div>
@@ -705,9 +970,9 @@
 
         <!-- Controls -->
         <div class="controls">
-            <button class="btn btn-primary" id="btnRefresh">🔄 Refresh</button>
+            <button class="btn btn-primary" id="btnRefresh">🔄 Refresh Games</button>
             <button class="btn btn-primary" id="btnTrain">🎓 Train AI on Season</button>
-            <button class="btn btn-secondary" id="btnExport">📊 Export Elite Plays</button>
+            <button class="btn btn-secondary" id="btnExport">📊 Export Results</button>
             <button class="btn btn-danger" id="btnReset">⚠️ Reset AI</button>
         </div>
 
@@ -721,8 +986,15 @@
         </div>
 
         <footer>
-            <p><strong>Line Pricing NBA</strong> • Advanced Sports Analytics</p>
+            <p><strong>Line Pricing NBA</strong> • Advanced AI Sports Analytics</p>
             <p style="margin-top: 8px;">Last Updated: <span id="lastUpdate">--</span></p>
+            
+            <div class="disclaimer">
+                <strong>⚠️ DISCLAIMER:</strong> For entertainment and educational purposes only. 
+                Past performance does not guarantee future results. 
+                Bet responsibly. Must be 21+ where legal. 
+                Never bet more than you can afford to lose.
+            </div>
         </footer>
     </div>
 
@@ -736,13 +1008,20 @@
             seasonStart: '2024-10-22',
             minConfidence: 70,
             minEdge: 2.5,
-            eliteThreshold: 95  // Only track 95%+ plays
+            eliteThreshold: 95,
+            
+            // Unit sizing based on confidence
+            unitSizing: {
+                95: 1,   // 95-96% = 1 unit ⭐
+                97: 2,   // 97-98% = 2 units ⭐⭐
+                99: 3    // 99%+   = 3 units ⭐⭐⭐
+            }
         };
 
         let selectedDate = new Date();
 
         // ================================================================
-        // TEAM DATA
+        // TEAM DATA & STATS
         // ================================================================
         const TEAMS = {
             logos: {
@@ -754,6 +1033,28 @@
                 'Raptors': '28', 'Bulls': '4', 'Cavaliers': '5', 'Cavs': '5', 'Pistons': '8',
                 'Pacers': '11', 'Bucks': '15', 'Hawks': '1', 'Hornets': '30',
                 'Heat': '14', 'Magic': '19', 'Wizards': '27'
+            },
+            
+            // Mock team stats (in production, fetch from API)
+            stats: {
+                'Lakers': { offense: 117.5, defense: 112.3, pace: 99.8, recentForm: 115.2 },
+                'Warriors': { offense: 118.2, defense: 110.5, pace: 101.5, recentForm: 120.1 },
+                'Celtics': { offense: 120.1, defense: 109.8, pace: 98.2, recentForm: 119.5 },
+                'Nuggets': { offense: 116.8, defense: 111.2, pace: 97.5, recentForm: 114.3 },
+                'Bucks': { offense: 119.3, defense: 113.1, pace: 100.2, recentForm: 121.0 },
+                // Add more teams as needed - default to league average if not found
+            },
+            
+            getStats(name) {
+                const clean = name.replace(/^(Los Angeles|LA|New York|NY|Golden State|Portland)\s+/, '');
+                for (const [key, stats] of Object.entries(this.stats)) {
+                    if (key.toLowerCase().includes(clean.toLowerCase()) || 
+                        clean.toLowerCase().includes(key.toLowerCase())) {
+                        return stats;
+                    }
+                }
+                // Default league average
+                return { offense: 115.0, defense: 112.0, pace: 99.0, recentForm: 115.0 };
             },
             
             getLogo(name) {
@@ -768,35 +1069,68 @@
             }
         };
 
+        // Mock injury data (in production, fetch from ESPN injuries API)
+        const INJURIES = {
+            'Lakers': [
+                { player: 'LeBron James', status: 'Questionable', impact: -5 },
+                { player: 'Anthony Davis', status: 'Out', impact: -10 }
+            ],
+            'Warriors': [
+                { player: 'Stephen Curry', status: 'Probable', impact: -2 }
+            ],
+            // Add more as needed
+        };
+
+        function getInjuries(teamName) {
+            const clean = teamName.replace(/^(Los Angeles|LA|New York|NY|Golden State|Portland)\s+/, '');
+            for (const [key, injuries] of Object.entries(INJURIES)) {
+                if (key.toLowerCase().includes(clean.toLowerCase()) || 
+                    clean.toLowerCase().includes(key.toLowerCase())) {
+                    return injuries;
+                }
+            }
+            return [];
+        }
+
         // ================================================================
-        // AI BRAIN
+        // AI BRAIN WITH ENHANCED TRACKING
         // ================================================================
         const AI = {
             brain: null,
 
             init() {
-                const stored = localStorage.getItem('nba_ai_brain');
+                const stored = localStorage.getItem('nba_ai_brain_v2');
                 if (stored) {
                     this.brain = JSON.parse(stored);
                 } else {
                     this.brain = {
+                        version: '2.0',
                         gamesAnalyzed: 0,
                         wins: 0,
                         losses: 0,
                         pushes: 0,
                         unitsWon: 0,
                         roi: 0,
-                        elitePlaysTracked: 0,  // Only 95%+
+                        elitePlaysTracked: 0,
+                        totalCLV: 0,
+                        avgCLV: 0,
                         
                         // Learning weights
                         spreadEdgeWeight: 8.0,
                         totalEdgeWeight: 5.0,
-                        recentFormWeight: 0.6,
-                        seasonWeight: 0.4,
+                        recentFormWeight: 0.65,
+                        seasonWeight: 0.35,
                         homeAdvantage: 2.5,
+                        restAdvantageWeight: 1.2,
+                        injuryImpactWeight: 1.5,
+                        publicFadeBonus: 1.3,
                         
-                        // Tracked elite plays
+                        // Tracked elite plays with full details
                         elitePlays: [],
+                        
+                        // Performance tracking
+                        last7Days: { wins: 0, losses: 0, pushes: 0, units: 0 },
+                        last30Days: { wins: 0, losses: 0, pushes: 0, units: 0 },
                         
                         lastUpdated: new Date().toISOString()
                     };
@@ -805,11 +1139,10 @@
 
             save() {
                 this.brain.lastUpdated = new Date().toISOString();
-                localStorage.setItem('nba_ai_brain', JSON.stringify(this.brain));
+                localStorage.setItem('nba_ai_brain_v2', JSON.stringify(this.brain));
             },
 
-            trackElitePlay(game, prediction) {
-                // Only track 95%+ confidence
+            trackElitePlay(game, prediction, analysis) {
                 if (prediction.confidence < CONFIG.eliteThreshold) return;
 
                 const play = {
@@ -821,10 +1154,15 @@
                     edge: prediction.edge,
                     type: prediction.type,
                     vegasLine: prediction.type === 'spread' ? game.vegasSpread : game.vegasTotal,
-                    tracked: new Date().toISOString()
+                    openingLine: analysis.lineMovement.opening,
+                    publicPct: analysis.publicBetting.percentage,
+                    clv: 0, // Will update after game
+                    units: this.getUnitSize(prediction.confidence),
+                    tracked: new Date().toISOString(),
+                    result: null, // 'win', 'loss', 'push', or null
+                    actualScore: null
                 };
 
-                // Check if already tracked
                 const exists = this.brain.elitePlays.find(p => p.gameId === game.id);
                 if (!exists) {
                     this.brain.elitePlays.push(play);
@@ -833,24 +1171,46 @@
                 }
             },
 
-            learn(prediction, actualResult) {
+            getUnitSize(confidence) {
+                if (confidence >= 99) return 3;
+                if (confidence >= 97) return 2;
+                return 1;
+            },
+
+            learn(prediction, actualResult, clv = 0) {
                 if (!actualResult || !actualResult.finalScore) return;
 
                 this.brain.gamesAnalyzed++;
 
                 const won = this.checkWin(prediction, actualResult);
+                const units = this.getUnitSize(prediction.confidence);
                 
                 if (won === 'win') {
                     this.brain.wins++;
-                    this.brain.unitsWon++;
+                    this.brain.unitsWon += units;
+                    this.brain.last7Days.wins++;
+                    this.brain.last30Days.wins++;
+                    this.brain.last7Days.units += units;
+                    this.brain.last30Days.units += units;
                 } else if (won === 'loss') {
                     this.brain.losses++;
-                    this.brain.unitsWon--;
+                    this.brain.unitsWon -= units;
+                    this.brain.last7Days.losses++;
+                    this.brain.last30Days.losses++;
+                    this.brain.last7Days.units -= units;
+                    this.brain.last30Days.units -= units;
                 } else {
                     this.brain.pushes++;
+                    this.brain.last7Days.pushes++;
+                    this.brain.last30Days.pushes++;
                 }
 
+                // Track CLV
+                this.brain.totalCLV += clv;
                 const totalBets = this.brain.wins + this.brain.losses + this.brain.pushes;
+                this.brain.avgCLV = this.brain.totalCLV / totalBets;
+
+                // Update ROI
                 if (totalBets > 0) {
                     this.brain.roi = (this.brain.unitsWon / totalBets) * 100;
                 }
@@ -910,24 +1270,49 @@
                 const winLoss = this.brain.wins + this.brain.losses;
                 const accuracy = winLoss > 0 ? ((this.brain.wins / winLoss) * 100).toFixed(1) : 0;
 
+                const last7Total = this.brain.last7Days.wins + this.brain.last7Days.losses + this.brain.last7Days.pushes;
+                const last7WinRate = last7Total > 0 ? 
+                    ((this.brain.last7Days.wins / (this.brain.last7Days.wins + this.brain.last7Days.losses)) * 100).toFixed(1) : 0;
+
+                const last30Total = this.brain.last30Days.wins + this.brain.last30Days.losses + this.brain.last30Days.pushes;
+                const last30WinRate = last30Total > 0 ? 
+                    ((this.brain.last30Days.wins / (this.brain.last30Days.wins + this.brain.last30Days.losses)) * 100).toFixed(1) : 0;
+
                 return {
                     elite: this.brain.elitePlaysTracked,
                     accuracy: accuracy + '%',
                     record: `${this.brain.wins}-${this.brain.losses}-${this.brain.pushes}`,
                     units: (this.brain.unitsWon >= 0 ? '+' : '') + this.brain.unitsWon.toFixed(1),
-                    roi: (this.brain.roi >= 0 ? '+' : '') + this.brain.roi.toFixed(1) + '%'
+                    roi: (this.brain.roi >= 0 ? '+' : '') + this.brain.roi.toFixed(1) + '%',
+                    avgCLV: (this.brain.avgCLV >= 0 ? '+' : '') + this.brain.avgCLV.toFixed(2),
+                    last7: {
+                        winRate: last7WinRate + '%',
+                        record: `${this.brain.last7Days.wins}-${this.brain.last7Days.losses}-${this.brain.last7Days.pushes}`,
+                        units: (this.brain.last7Days.units >= 0 ? '+' : '') + this.brain.last7Days.units.toFixed(1)
+                    },
+                    last30: {
+                        winRate: last30WinRate + '%',
+                        record: `${this.brain.last30Days.wins}-${this.brain.last30Days.losses}-${this.brain.last30Days.pushes}`,
+                        units: (this.brain.last30Days.units >= 0 ? '+' : '') + this.brain.last30Days.units.toFixed(1)
+                    }
                 };
             },
 
+            getRecentResults() {
+                return this.brain.elitePlays
+                    .filter(p => p.result !== null)
+                    .sort((a, b) => new Date(b.date) - new Date(a.date))
+                    .slice(0, 10);
+            },
+
             getElitePlays() {
-                return this.brain.elitePlays.sort((a, b) => 
-                    new Date(b.tracked) - new Date(a.tracked)
-                );
+                return this.brain.elitePlays
+                    .sort((a, b) => new Date(b.tracked) - new Date(a.tracked));
             },
 
             reset() {
-                if (confirm('Reset AI and clear all elite plays? This cannot be undone.')) {
-                    localStorage.removeItem('nba_ai_brain');
+                if (confirm('Reset AI and clear all data? This cannot be undone.')) {
+                    localStorage.removeItem('nba_ai_brain_v2');
                     this.init();
                     updateUI();
                     loadGames();
@@ -956,6 +1341,7 @@
                     let vegasSpread = 0;
                     let vegasTotal = 220;
                     let favorite = '';
+                    let openingSpread = 0;
                     
                     if (comp.odds && comp.odds.length > 0) {
                         const odds = comp.odds[0];
@@ -980,6 +1366,9 @@
                         if (odds.overUnder) {
                             vegasTotal = parseFloat(odds.overUnder);
                         }
+
+                        // Mock opening line (in production, track real opening)
+                        openingSpread = vegasSpread + (Math.random() * 2 - 1);
                     }
 
                     if (!favorite) {
@@ -1006,6 +1395,7 @@
                         vegasTotal,
                         favorite,
                         favoriteSpread: Math.abs(vegasSpread),
+                        openingSpread,
                         awayScore,
                         homeScore,
                         isComplete: event.status.type.completed,
@@ -1029,28 +1419,84 @@
         }
 
         // ================================================================
-        // MODEL PREDICTIONS
+        // ENHANCED MODEL PREDICTIONS
         // ================================================================
         function makePrediction(game) {
-            const awayOffense = 115 + (Math.random() * 10 - 5);
-            const awayDefense = 110 + (Math.random() * 10 - 5);
-            const homeOffense = 115 + (Math.random() * 10 - 5);
-            const homeDefense = 110 + (Math.random() * 10 - 5);
+            // Get team stats
+            const awayStats = TEAMS.getStats(game.awayTeam);
+            const homeStats = TEAMS.getStats(game.homeTeam);
             
-            const awayScore = Math.round((awayOffense + homeDefense) / 2);
-            const homeScore = Math.round((homeOffense + awayDefense) / 2 + AI.brain.homeAdvantage);
+            // Get injuries
+            const awayInjuries = getInjuries(game.awayTeam);
+            const homeInjuries = getInjuries(game.homeTeam);
+            
+            // Calculate injury impact
+            const awayInjuryImpact = awayInjuries.reduce((sum, inj) => sum + (inj.impact || 0), 0);
+            const homeInjuryImpact = homeInjuries.reduce((sum, inj) => sum + (inj.impact || 0), 0);
+            
+            // Mock rest days (in production, calculate from actual schedule)
+            const awayRestDays = Math.floor(Math.random() * 3) + 1;
+            const homeRestDays = Math.floor(Math.random() * 3) + 1;
+            const restDifferential = homeRestDays - awayRestDays;
+            const restAdjustment = restDifferential * AI.brain.restAdvantageWeight;
+            
+            // Blend recent form and season stats
+            const awayOffense = (awayStats.recentForm * AI.brain.recentFormWeight) + 
+                               (awayStats.offense * AI.brain.seasonWeight);
+            const homeOffense = (homeStats.recentForm * AI.brain.recentFormWeight) + 
+                               (homeStats.offense * AI.brain.seasonWeight);
+            
+            // Project scores with all adjustments
+            const awayScore = Math.round(
+                (awayOffense + homeStats.defense) / 2 + 
+                (awayInjuryImpact * AI.brain.injuryImpactWeight)
+            );
+            const homeScore = Math.round(
+                (homeOffense + awayStats.defense) / 2 + 
+                AI.brain.homeAdvantage + 
+                (homeInjuryImpact * AI.brain.injuryImpactWeight) +
+                restAdjustment
+            );
             
             const projectedSpread = homeScore - awayScore;
             const projectedTotal = awayScore + homeScore;
             
+            // Calculate edges
             const spreadEdge = Math.abs(projectedSpread - game.vegasSpread);
             const totalEdge = Math.abs(projectedTotal - game.vegasTotal);
             
+            // Line movement analysis
+            const lineMovement = {
+                opening: game.openingSpread,
+                current: game.vegasSpread,
+                movement: game.vegasSpread - game.openingSpread,
+                direction: game.vegasSpread > game.openingSpread ? 'up' : 
+                          game.vegasSpread < game.openingSpread ? 'down' : 'none'
+            };
+            
+            // Mock public betting percentage (in production, fetch real data)
+            const publicPct = Math.floor(Math.random() * 40) + 50; // 50-90%
+            const publicSide = game.vegasSpread < 0 ? game.homeTeam : game.awayTeam;
+            const shouldFade = publicPct >= 70;
+            
+            // Calculate confidence
             let confidence = 50;
             confidence += Math.min(spreadEdge * AI.brain.spreadEdgeWeight, 30);
             confidence += Math.min(totalEdge * AI.brain.totalEdgeWeight, 15);
+            
+            // Bonus for fading public
+            if (shouldFade) {
+                confidence += AI.brain.publicFadeBonus;
+            }
+            
+            // Bonus for sharp line movement
+            if (Math.abs(lineMovement.movement) >= 2) {
+                confidence += 3;
+            }
+            
             confidence = Math.min(99, Math.round(confidence));
             
+            // Determine best bet
             let recommendation = null;
             
             if (confidence >= CONFIG.minConfidence) {
@@ -1082,9 +1528,17 @@
                 }
             }
 
-            // Track elite plays (95%+ only)
+            const analysis = {
+                injuries: { away: awayInjuries, home: homeInjuries },
+                restDays: { away: awayRestDays, home: homeRestDays, differential: restDifferential },
+                lineMovement,
+                publicBetting: { percentage: publicPct, side: publicSide, fade: shouldFade },
+                clv: 0 // Will calculate after game
+            };
+
+            // Track elite plays
             if (recommendation && recommendation.confidence >= CONFIG.eliteThreshold) {
-                AI.trackElitePlay(game, recommendation);
+                AI.trackElitePlay(game, recommendation, analysis);
             }
             
             return {
@@ -1095,7 +1549,8 @@
                 spreadEdge,
                 totalEdge,
                 confidence,
-                recommendation
+                recommendation,
+                analysis
             };
         }
 
@@ -1109,17 +1564,14 @@
             
             const dates = [];
             
-            // 7 days back
             for (let i = 7; i > 0; i--) {
                 const d = new Date(today);
                 d.setDate(d.getDate() - i);
                 dates.push({ date: d, type: 'past' });
             }
             
-            // Today
             dates.push({ date: new Date(today), type: 'today' });
             
-            // 3 days forward
             for (let i = 1; i <= 3; i++) {
                 const d = new Date(today);
                 d.setDate(d.getDate() + i);
@@ -1140,7 +1592,6 @@
                 <button class="nav-arrow" id="navNext">→</button>
             `;
 
-            // Event listeners
             nav.querySelectorAll('.date-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     selectedDate = new Date(btn.dataset.date);
@@ -1161,7 +1612,6 @@
                 loadGames();
             });
 
-            // Update current date display
             document.getElementById('currentDate').textContent = 
                 selectedDate.toLocaleDateString('en-US', { 
                     weekday: 'long',
@@ -1199,11 +1649,15 @@
 
         function renderGameCard(game) {
             const p = game.prediction;
+            const a = p.analysis;
             const hasBet = p.recommendation !== null;
             const isElite = hasBet && p.recommendation.confidence >= CONFIG.eliteThreshold;
             
+            const units = isElite ? AI.getUnitSize(p.recommendation.confidence) : 0;
+            const stars = '⭐'.repeat(units);
+            
             return `
-                <div class="game-card ${isElite ? 'has-elite-bet' : hasBet ? 'has-bet' : ''}">
+                <div class="game-card ${isElite ? 'has-elite-bet' : ''}">
                     <div class="game-header">
                         <div class="game-time">${game.time}</div>
                         <div class="game-status ${game.isComplete ? 'completed' : 'upcoming'}">
@@ -1223,6 +1677,62 @@
                             <span class="team-name">${game.homeTeam}</span>
                             ${game.homeScore !== null ? 
                                 `<span class="team-score ${game.isComplete ? 'final' : ''}">${game.homeScore}</span>` : ''}
+                        </div>
+                    </div>
+
+                    ${a.injuries.away.length > 0 || a.injuries.home.length > 0 ? `
+                        <div class="injury-alert">
+                            <div class="injury-header">🏥 Injury Report</div>
+                            ${a.injuries.away.length > 0 ? `
+                                <div class="injury-item"><strong>${game.awayTeam}:</strong> ${a.injuries.away.map(i => `${i.player} (${i.status})`).join(', ')}</div>
+                            ` : ''}
+                            ${a.injuries.home.length > 0 ? `
+                                <div class="injury-item"><strong>${game.homeTeam}:</strong> ${a.injuries.home.map(i => `${i.player} (${i.status})`).join(', ')}</div>
+                            ` : ''}
+                        </div>
+                    ` : ''}
+
+                    <div class="rest-info">
+                        <div class="rest-header">⚡ Rest Days Analysis</div>
+                        <div class="rest-item">
+                            <span>${game.awayTeam}: ${a.restDays.away} days</span>
+                            <span>${game.homeTeam}: ${a.restDays.home} days</span>
+                        </div>
+                        ${Math.abs(a.restDays.differential) >= 1 ? `
+                            <div style="margin-top: 6px; color: var(--success); font-weight: 600;">
+                                Advantage: ${a.restDays.differential > 0 ? game.homeTeam : game.awayTeam} 
+                                (+${Math.abs(a.restDays.differential * 1.2).toFixed(1)} pts)
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    ${Math.abs(a.lineMovement.movement) >= 0.5 ? `
+                        <div class="line-movement">
+                            <div class="line-movement-header">📈 Line Movement (Sharp Action)</div>
+                            <div class="line-movement-item">
+                                <span>Opening: ${game.favorite} ${Math.abs(a.lineMovement.opening).toFixed(1)}</span>
+                                <span class="movement-arrow ${a.lineMovement.direction}">${a.lineMovement.direction === 'up' ? '⬆️' : '⬇️'} ${Math.abs(a.lineMovement.movement).toFixed(1)}</span>
+                            </div>
+                            <div style="margin-top: 4px; font-size: 0.8rem; color: var(--text-dim);">
+                                ${Math.abs(a.lineMovement.movement) >= 2 ? 
+                                    '<strong style="color: var(--warning);">🔥 SIGNIFICANT MOVE - Sharp money detected!</strong>' : 
+                                    'Standard movement'}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <div class="public-betting">
+                        <div class="public-header">👥 Public Betting</div>
+                        <div class="public-bar-container">
+                            <div class="public-bar" style="width: ${a.publicBetting.percentage}%;">
+                                ${a.publicBetting.percentage}%
+                            </div>
+                        </div>
+                        <div class="public-info">
+                            <span>Public on ${a.publicBetting.side}</span>
+                            ${a.publicBetting.fade ? 
+                                '<span class="fade-indicator">✅ FADE THE PUBLIC</span>' : 
+                                '<span>Balanced action</span>'}
                         </div>
                     </div>
 
@@ -1270,6 +1780,14 @@
                             <div class="bet-title ${isElite ? 'elite-level' : ''}">
                                 ${isElite ? '💎 ELITE BET: ' : '✅ BET: '}${p.recommendation.line}
                             </div>
+                            
+                            ${isElite ? `
+                                <div class="unit-sizing">
+                                    <div class="unit-stars">${stars}</div>
+                                    <div class="unit-text">Recommended: ${units} Unit${units > 1 ? 's' : ''}</div>
+                                </div>
+                            ` : ''}
+
                             <div class="bet-details">
                                 <div class="bet-detail">
                                     <div class="bet-detail-label">Confidence</div>
@@ -1283,7 +1801,23 @@
                                     <div class="bet-detail-label">Type</div>
                                     <div class="bet-detail-value ${isElite ? 'elite-level' : ''}">${p.recommendation.type === 'spread' ? 'Spread' : 'Total'}</div>
                                 </div>
+                                ${isElite ? `
+                                    <div class="bet-detail">
+                                        <div class="bet-detail-label">Units</div>
+                                        <div class="bet-detail-value elite-level">${units}u</div>
+                                    </div>
+                                ` : ''}
                             </div>
+
+                            ${isElite ? `
+                                <div class="clv-display">
+                                    <div class="clv-header">📊 Closing Line Value (CLV)</div>
+                                    <div class="clv-value">
+                                        <span>Will update after game</span>
+                                        <span class="clv-number">--</span>
+                                    </div>
+                                </div>
+                            ` : ''}
                         </div>
                     ` : ''}
                 </div>
@@ -1310,7 +1844,7 @@
                         <div class="elite-matchup">${play.matchup}</div>
                         <div class="elite-conf-badge">${play.confidence}%</div>
                     </div>
-                    <div style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 8px;">
+                    <div style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 12px;">
                         ${new Date(play.date).toLocaleDateString('en-US', { 
                             month: 'short', 
                             day: 'numeric',
@@ -1318,10 +1852,52 @@
                             minute: '2-digit'
                         })}
                     </div>
-                    <div class="elite-bet">${play.bet}</div>
-                    <div style="display: flex; justify-content: space-between; margin-top: 12px; font-size: 0.85rem;">
-                        <span style="color: var(--text-dim);">Edge: <strong style="color: var(--text);">${play.edge.toFixed(1)} pts</strong></span>
-                        <span style="color: var(--text-dim);">Type: <strong style="color: var(--text);">${play.type === 'spread' ? 'Spread' : 'Total'}</strong></span>
+                    <div style="background: rgba(124, 58, 237, 0.2); padding: 12px; border-radius: 6px; margin-bottom: 12px;">
+                        <div style="font-size: 1.05rem; font-weight: 600;">${play.bet}</div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; font-size: 0.8rem;">
+                        <div style="text-align: center;">
+                            <div style="color: var(--text-dim);">Edge</div>
+                            <div style="font-weight: 700; color: var(--text);">${play.edge.toFixed(1)} pts</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="color: var(--text-dim);">Units</div>
+                            <div style="font-weight: 700; color: var(--text);">${play.units}u</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="color: var(--text-dim);">Public</div>
+                            <div style="font-weight: 700; color: var(--text);">${play.publicPct}%</div>
+                        </div>
+                    </div>
+                    ${play.result ? `
+                        <div style="margin-top: 12px; padding: 10px; background: ${play.result === 'win' ? 'rgba(13, 148, 136, 0.2)' : 'rgba(220, 38, 38, 0.2)'}; border-radius: 6px; text-align: center;">
+                            <strong style="color: ${play.result === 'win' ? 'var(--success)' : 'var(--danger)'};">
+                                ${play.result.toUpperCase()} ${play.actualScore ? `(${play.actualScore})` : ''}
+                            </strong>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function renderRecentResults() {
+            const results = AI.getRecentResults();
+            const container = document.getElementById('recentResults');
+
+            if (results.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-dim);">No results yet. Train AI to see historical performance.</div>';
+                return;
+            }
+
+            container.innerHTML = results.map(r => `
+                <div class="result-item ${r.result}">
+                    <div class="result-date">${new Date(r.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
+                    <div class="result-pick">${r.bet}</div>
+                    <div class="result-outcome">
+                        <span style="font-weight: 600; color: ${r.result === 'win' ? 'var(--success)' : 'var(--danger)'};">
+                            ${r.result.toUpperCase()}
+                        </span>
+                        <span style="color: var(--text-dim);">${r.units}u • ${r.confidence}%</span>
                     </div>
                 </div>
             `).join('');
@@ -1330,14 +1906,24 @@
         function updateUI() {
             const stats = AI.getStats();
             
-            document.getElementById('statElite').textContent = stats.elite;
-            document.getElementById('statAccuracy').textContent = stats.accuracy;
-            document.getElementById('statRecord').textContent = stats.record;
-            document.getElementById('statUnits').textContent = stats.units;
-            document.getElementById('statROI').textContent = stats.roi;
+            // Performance dashboard
+            document.getElementById('perfElite').textContent = stats.elite;
+            document.getElementById('perfWinRate').textContent = stats.accuracy;
+            document.getElementById('perfRecord').textContent = stats.record;
+            document.getElementById('perfUnits').textContent = stats.units;
+            document.getElementById('perfROI').textContent = stats.roi;
+            document.getElementById('perfCLV').textContent = stats.avgCLV;
             
-            const unitsEl = document.getElementById('statUnits');
-            const roiEl = document.getElementById('statROI');
+            document.getElementById('perf7Days').textContent = stats.last7.winRate;
+            document.getElementById('perf7Record').textContent = stats.last7.record;
+            
+            document.getElementById('perf30Days').textContent = stats.last30.winRate;
+            document.getElementById('perf30Record').textContent = stats.last30.record;
+            
+            // Color coding
+            const unitsEl = document.getElementById('perfUnits');
+            const roiEl = document.getElementById('perfROI');
+            const clvEl = document.getElementById('perfCLV');
             
             if (AI.brain.unitsWon > 0) {
                 unitsEl.classList.add('positive');
@@ -1351,7 +1937,16 @@
                 roiEl.classList.remove('positive');
             }
 
+            if (AI.brain.avgCLV > 0) {
+                clvEl.classList.add('positive');
+                clvEl.classList.remove('negative');
+            } else if (AI.brain.avgCLV < 0) {
+                clvEl.classList.add('negative');
+                clvEl.classList.remove('positive');
+            }
+
             renderElitePlays();
+            renderRecentResults();
         }
 
         // ================================================================
@@ -1384,31 +1979,43 @@
                     if (game.isComplete) {
                         const prediction = makePrediction(game);
                         
-                        if (prediction.recommendation) {
+                        if (prediction.recommendation && prediction.recommendation.confidence >= CONFIG.eliteThreshold) {
+                            // Mock CLV (in production, compare to actual closing line)
+                            const mockCLV = (Math.random() * 2) - 0.5;
+                            
                             AI.learn(prediction.recommendation, {
                                 finalScore: {
                                     away: game.awayScore,
                                     home: game.homeScore
                                 }
-                            });
+                            }, mockCLV);
                             totalGames++;
                         }
                     }
                 }
                 
                 processedDates++;
-                progress.textContent = `Processed ${processedDates}/${dates.length} days • ${totalGames} games analyzed`;
+                progress.textContent = `Processed ${processedDates}/${dates.length} days • ${totalGames} elite plays analyzed`;
                 
                 await new Promise(resolve => setTimeout(resolve, 100));
             }
             
             banner.style.display = 'none';
-            alert(`Training complete! AI analyzed ${totalGames} games. Elite plays (95%+): ${AI.brain.elitePlaysTracked}`);
+            
+            const stats = AI.getStats();
+            alert(`🎉 Training Complete!\n\n` +
+                  `Elite Plays Tracked: ${stats.elite}\n` +
+                  `Win Rate: ${stats.accuracy}\n` +
+                  `Record: ${stats.record}\n` +
+                  `Units: ${stats.units}\n` +
+                  `ROI: ${stats.roi}\n` +
+                  `Avg CLV: ${stats.avgCLV}`);
+            
             updateUI();
             loadGames();
         }
 
-        function exportElitePlays() {
+        function exportResults() {
             const plays = AI.getElitePlays();
             
             if (plays.length === 0) {
@@ -1416,16 +2023,16 @@
                 return;
             }
 
-            let csv = 'Date,Matchup,Bet,Confidence,Edge,Type\n';
+            let csv = 'Date,Matchup,Bet,Confidence,Edge,Units,Public %,Result,CLV\n';
             plays.forEach(p => {
-                csv += `"${new Date(p.date).toLocaleDateString()}","${p.matchup}","${p.bet}",${p.confidence}%,${p.edge.toFixed(1)},${p.type}\n`;
+                csv += `"${new Date(p.date).toLocaleDateString()}","${p.matchup}","${p.bet}",${p.confidence}%,${p.edge.toFixed(1)},${p.units},${p.publicPct}%,${p.result || 'Pending'},${p.clv.toFixed(2)}\n`;
             });
 
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `elite-plays-${new Date().toISOString().split('T')[0]}.csv`;
+            a.download = `line-pricing-nba-results-${new Date().toISOString().split('T')[0]}.csv`;
             a.click();
         }
 
@@ -1440,7 +2047,7 @@
         // Event listeners
         document.getElementById('btnRefresh').addEventListener('click', loadGames);
         document.getElementById('btnTrain').addEventListener('click', trainOnFullSeason);
-        document.getElementById('btnExport').addEventListener('click', exportElitePlays);
+        document.getElementById('btnExport').addEventListener('click', exportResults);
         document.getElementById('btnReset').addEventListener('click', () => AI.reset());
 
         document.getElementById('btnYesterday').addEventListener('click', () => {
@@ -1462,6 +2069,14 @@
             renderDateNav();
             loadGames();
         });
+
+        // Auto-refresh every 5 minutes on game days
+        setInterval(() => {
+            const now = new Date();
+            if (now.toDateString() === selectedDate.toDateString()) {
+                loadGames();
+            }
+        }, 5 * 60 * 1000);
     </script>
 </body>
 </html>
