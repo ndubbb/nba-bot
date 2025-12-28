@@ -767,6 +767,33 @@
             </div>
         </div>
 
+        <!-- Self-Learning AI Dashboard -->
+        <div class="performance-dashboard" style="margin-top: 30px; border: 2px solid var(--primary);">
+            <div class="perf-header">🤖 Self-Learning AI System</div>
+            <div class="perf-grid">
+                <div class="perf-card">
+                    <div class="perf-label">Games Analyzed</div>
+                    <div class="perf-value" style="color: var(--primary);" id="aiGamesAnalyzed">--</div>
+                    <div class="perf-subtext">Historical Data</div>
+                </div>
+                <div class="perf-card highlight">
+                    <div class="perf-label">Spread Accuracy</div>
+                    <div class="perf-value elite-color" id="aiSpreadAccuracy">--</div>
+                    <div class="perf-subtext">Within 7 Points</div>
+                </div>
+                <div class="perf-card highlight">
+                    <div class="perf-label">Total Accuracy</div>
+                    <div class="perf-value elite-color" id="aiTotalAccuracy">--</div>
+                    <div class="perf-subtext">Within 10 Points</div>
+                </div>
+                <div class="perf-card">
+                    <div class="perf-label">Model Version</div>
+                    <div class="perf-value" style="color: var(--success);" id="aiVersion">--</div>
+                    <div class="perf-subtext" id="aiLastUpdate">--</div>
+                </div>
+            </div>
+        </div>
+
         <!-- Date Navigation -->
         <div class="date-nav-container">
             <div class="date-nav-header">
@@ -1183,6 +1210,311 @@
                     updateUI();
                     loadGames();
                 }
+            }
+        };
+
+        // ================================================================
+        // SELF-LEARNING AI SYSTEM
+        // ================================================================
+        const LEARNING_SYSTEM = {
+            storageKey: 'nba_learning_v1',
+            
+            // Initialize or load learning data
+            init() {
+                const stored = localStorage.getItem(this.storageKey);
+                if (stored) {
+                    this.data = JSON.parse(stored);
+                } else {
+                    this.data = {
+                        version: '1.0',
+                        gamesAnalyzed: 0,
+                        lastUpdate: null,
+                        predictions: [],
+                        accuracy: {
+                            spread: { correct: 0, total: 0, errors: [] },
+                            total: { correct: 0, total: 0, errors: [] },
+                            ml: { correct: 0, total: 0 }
+                        },
+                        weights: {
+                            spreadEdge: 9.2,
+                            totalEdge: 5.8,
+                            recentForm: 0.68,
+                            season: 0.32,
+                            homeAdv: 2.8,
+                            rest: 1.3,
+                            injury: 0.7,
+                            publicFade: 1.4,
+                            rankDiff: 0.8
+                        },
+                        adjustmentHistory: []
+                    };
+                }
+                console.log('🤖 Learning System initialized. Games analyzed:', this.data.gamesAnalyzed);
+            },
+            
+            save() {
+                localStorage.setItem(this.storageKey, JSON.stringify(this.data));
+            },
+            
+            // Fetch historical completed games from ESPN
+            async fetchHistoricalGames(daysBack = 14) {
+                console.log(`📚 Fetching last ${daysBack} days of completed games...`);
+                const games = [];
+                const today = new Date();
+                
+                for (let i = 1; i <= daysBack; i++) {
+                    const date = new Date(today);
+                    date.setDate(date.getDate() - i);
+                    const dateStr = formatDate(date);
+                    
+                    try {
+                        const url = `${CONFIG.corsProxy}${encodeURIComponent(CONFIG.apis.espn.scoreboard)}?dates=${dateStr}`;
+                        const response = await fetch(url);
+                        const data = await response.json();
+                        
+                        if (data.events) {
+                            for (const event of data.events) {
+                                // Only process completed games
+                                if (event.status.type.completed) {
+                                    const game = parseESPNGame(event);
+                                    if (game.homeScore !== null && game.awayScore !== null) {
+                                        games.push(game);
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // Small delay to avoid rate limiting
+                        await new Promise(resolve => setTimeout(resolve, 200));
+                    } catch (err) {
+                        console.warn(`Failed to fetch ${dateStr}:`, err.message);
+                    }
+                }
+                
+                console.log(`✅ Fetched ${games.length} completed games`);
+                return games;
+            },
+            
+            // Generate prediction for a historical game (what we would have predicted)
+            generateHistoricalPrediction(game) {
+                const awayStats = getTeamStats(game.awayTeam);
+                const homeStats = getTeamStats(game.homeTeam);
+                
+                if (!awayStats || !homeStats) return null;
+                
+                // Use same logic as current predictions
+                const awayOffense = (awayStats.recentForm * AI.brain.recentFormWeight) + 
+                                   (awayStats.offense * AI.brain.seasonWeight);
+                const homeOffense = (homeStats.recentForm * AI.brain.recentFormWeight) + 
+                                   (homeStats.offense * AI.brain.seasonWeight);
+                
+                const awayInjuries = getInjuries(game.awayTeam);
+                const homeInjuries = getInjuries(game.homeTeam);
+                const awayInjuryImpact = awayInjuries.reduce((sum, inj) => sum + inj.impact, 0);
+                const homeInjuryImpact = homeInjuries.reduce((sum, inj) => sum + inj.impact, 0);
+                
+                const awayScore = Math.round(
+                    (awayOffense + homeStats.defense) / 2 + 
+                    (awayInjuryImpact * AI.brain.injuryImpactWeight)
+                );
+                const homeScore = Math.round(
+                    (homeOffense + awayStats.defense) / 2 + 
+                    homeStats.homeAdv +
+                    (homeInjuryImpact * AI.brain.injuryImpactWeight)
+                );
+                
+                const projectedSpread = homeScore - awayScore;
+                const projectedTotal = awayScore + homeScore;
+                
+                return {
+                    projectedSpread,
+                    projectedTotal,
+                    projectedAwayScore: awayScore,
+                    projectedHomeScore: homeScore
+                };
+            },
+            
+            // Analyze predictions vs actual results
+            async analyzePredictions() {
+                console.log('🔍 Analyzing prediction accuracy...');
+                
+                const historicalGames = await this.fetchHistoricalGames(14);
+                if (historicalGames.length === 0) {
+                    console.log('⚠️ No historical games to analyze');
+                    return;
+                }
+                
+                let spreadErrors = [];
+                let totalErrors = [];
+                let spreadCorrect = 0;
+                let totalCorrect = 0;
+                
+                for (const game of historicalGames) {
+                    const prediction = this.generateHistoricalPrediction(game);
+                    if (!prediction) continue;
+                    
+                    const actualSpread = game.homeScore - game.awayScore;
+                    const actualTotal = game.homeScore + game.awayScore;
+                    
+                    const spreadError = Math.abs(prediction.projectedSpread - actualSpread);
+                    const totalError = Math.abs(prediction.projectedTotal - actualTotal);
+                    
+                    spreadErrors.push(spreadError);
+                    totalErrors.push(totalError);
+                    
+                    // Count as correct if within threshold
+                    if (spreadError <= 7) spreadCorrect++;
+                    if (totalError <= 10) totalCorrect++;
+                    
+                    // Store prediction for history
+                    this.data.predictions.push({
+                        date: game.date,
+                        matchup: `${game.awayTeam} @ ${game.homeTeam}`,
+                        predicted: prediction,
+                        actual: { spread: actualSpread, total: actualTotal },
+                        errors: { spread: spreadError, total: totalError }
+                    });
+                }
+                
+                // Keep only last 200 predictions
+                if (this.data.predictions.length > 200) {
+                    this.data.predictions = this.data.predictions.slice(-200);
+                }
+                
+                // Update accuracy stats
+                this.data.accuracy.spread.errors = spreadErrors;
+                this.data.accuracy.total.errors = totalErrors;
+                this.data.accuracy.spread.correct += spreadCorrect;
+                this.data.accuracy.spread.total += spreadErrors.length;
+                this.data.accuracy.total.correct += totalCorrect;
+                this.data.accuracy.total.total += totalErrors.length;
+                this.data.gamesAnalyzed += historicalGames.length;
+                
+                const avgSpreadError = spreadErrors.reduce((a,b) => a+b, 0) / spreadErrors.length;
+                const avgTotalError = totalErrors.reduce((a,b) => a+b, 0) / totalErrors.length;
+                const spreadAccuracy = (spreadCorrect / spreadErrors.length * 100).toFixed(1);
+                const totalAccuracy = (totalCorrect / totalErrors.length * 100).toFixed(1);
+                
+                console.log('📊 Analysis Results:');
+                console.log(`  Spread: ${spreadAccuracy}% accurate (avg error: ${avgSpreadError.toFixed(1)} pts)`);
+                console.log(`  Total: ${totalAccuracy}% accurate (avg error: ${avgTotalError.toFixed(1)} pts)`);
+                
+                return {
+                    spreadAccuracy: spreadAccuracy / 100,
+                    totalAccuracy: totalAccuracy / 100,
+                    avgSpreadError,
+                    avgTotalError
+                };
+            },
+            
+            // Adjust model weights based on accuracy
+            adjustWeights(analysisResults) {
+                if (!analysisResults) return;
+                
+                console.log('⚙️ Adjusting model weights...');
+                
+                const { spreadAccuracy, avgSpreadError, totalAccuracy, avgTotalError } = analysisResults;
+                const targetSpreadAccuracy = 0.65; // 65% target
+                const targetTotalAccuracy = 0.70; // 70% target
+                
+                const oldWeights = { ...this.data.weights };
+                
+                // Adjust spread weights
+                if (spreadAccuracy < targetSpreadAccuracy) {
+                    if (avgSpreadError > 7) {
+                        // Predictions too aggressive
+                        this.data.weights.spreadEdge *= 0.95;
+                        this.data.weights.injury *= 0.95;
+                        this.data.weights.homeAdv *= 0.95;
+                        console.log('  ⬇️ Reducing weights - predictions too aggressive');
+                    }
+                } else if (spreadAccuracy > targetSpreadAccuracy + 0.05) {
+                    // Predictions too conservative
+                    this.data.weights.spreadEdge *= 1.03;
+                    console.log('  ⬆️ Increasing spread weight - predictions too conservative');
+                }
+                
+                // Adjust total weights
+                if (totalAccuracy < targetTotalAccuracy) {
+                    this.data.weights.totalEdge *= 0.97;
+                } else if (totalAccuracy > targetTotalAccuracy + 0.05) {
+                    this.data.weights.totalEdge *= 1.03;
+                }
+                
+                // Cap weights to reasonable ranges
+                this.data.weights.spreadEdge = Math.max(5, Math.min(15, this.data.weights.spreadEdge));
+                this.data.weights.totalEdge = Math.max(3, Math.min(10, this.data.weights.totalEdge));
+                this.data.weights.injury = Math.max(0.4, Math.min(1.2, this.data.weights.injury));
+                this.data.weights.homeAdv = Math.max(2.0, Math.min(4.0, this.data.weights.homeAdv));
+                
+                // Record adjustment
+                this.data.adjustmentHistory.push({
+                    date: new Date().toISOString(),
+                    reason: `Spread: ${(spreadAccuracy*100).toFixed(1)}%, Total: ${(totalAccuracy*100).toFixed(1)}%`,
+                    oldWeights,
+                    newWeights: { ...this.data.weights }
+                });
+                
+                // Keep last 50 adjustments
+                if (this.data.adjustmentHistory.length > 50) {
+                    this.data.adjustmentHistory = this.data.adjustmentHistory.slice(-50);
+                }
+                
+                console.log('✅ Weights adjusted:', this.data.weights);
+                
+                // Update AI brain with new weights
+                AI.brain.spreadEdgeWeight = this.data.weights.spreadEdge;
+                AI.brain.totalEdgeWeight = this.data.weights.totalEdge;
+                AI.brain.injuryImpactWeight = this.data.weights.injury;
+                AI.brain.homeAdvantage = this.data.weights.homeAdv;
+                AI.save();
+            },
+            
+            // Main learning function - run this daily
+            async learn() {
+                const now = new Date();
+                const lastUpdate = this.data.lastUpdate ? new Date(this.data.lastUpdate) : null;
+                
+                // Only update if it's been 12+ hours
+                if (lastUpdate) {
+                    const hoursSince = (now - lastUpdate) / (1000 * 60 * 60);
+                    if (hoursSince < 12) {
+                        console.log(`✅ Model is fresh (updated ${hoursSince.toFixed(1)}h ago). Skipping learning.`);
+                        return;
+                    }
+                }
+                
+                console.log('🤖 Starting self-learning process...');
+                
+                try {
+                    const analysis = await this.analyzePredictions();
+                    if (analysis) {
+                        this.adjustWeights(analysis);
+                        this.data.lastUpdate = now.toISOString();
+                        this.save();
+                        console.log('🎓 Learning complete. Model improved!');
+                    }
+                } catch (err) {
+                    console.error('❌ Learning failed:', err);
+                }
+            },
+            
+            // Get learning stats for display
+            getStats() {
+                const spreadAcc = this.data.accuracy.spread.total > 0
+                    ? (this.data.accuracy.spread.correct / this.data.accuracy.spread.total * 100).toFixed(1)
+                    : 0;
+                const totalAcc = this.data.accuracy.total.total > 0
+                    ? (this.data.accuracy.total.correct / this.data.accuracy.total.total * 100).toFixed(1)
+                    : 0;
+                
+                return {
+                    gamesAnalyzed: this.data.gamesAnalyzed,
+                    spreadAccuracy: spreadAcc + '%',
+                    totalAccuracy: totalAcc + '%',
+                    version: this.data.adjustmentHistory.length + 1,
+                    lastUpdate: this.data.lastUpdate
+                };
             }
         };
 
@@ -1805,6 +2137,21 @@
                 unitsEl.classList.add('negative');
                 roiEl.classList.add('negative');
             }
+            
+            // Update learning system stats
+            const learningStats = LEARNING_SYSTEM.getStats();
+            document.getElementById('aiGamesAnalyzed').textContent = learningStats.gamesAnalyzed;
+            document.getElementById('aiSpreadAccuracy').textContent = learningStats.spreadAccuracy;
+            document.getElementById('aiTotalAccuracy').textContent = learningStats.totalAccuracy;
+            document.getElementById('aiVersion').textContent = 'v' + learningStats.version;
+            
+            if (learningStats.lastUpdate) {
+                const updateDate = new Date(learningStats.lastUpdate);
+                const hoursAgo = Math.floor((Date.now() - updateDate.getTime()) / (1000 * 60 * 60));
+                document.getElementById('aiLastUpdate').textContent = hoursAgo < 1 ? 'Just now' : `${hoursAgo}h ago`;
+            } else {
+                document.getElementById('aiLastUpdate').textContent = 'Never updated';
+            }
         }
 
         function exportResults() {
@@ -1832,9 +2179,16 @@
         // INITIALIZATION
         // ================================================================
         AI.init();
+        LEARNING_SYSTEM.init();
         updateUI();
         renderDateNav();
         loadGames();
+        
+        // Run learning in background (doesn't block UI)
+        setTimeout(async () => {
+            await LEARNING_SYSTEM.learn();
+            console.log('📊 Learning Stats:', LEARNING_SYSTEM.getStats());
+        }, 2000); // Wait 2 seconds after page load
 
         // Event listeners
         document.getElementById('btnRefresh').addEventListener('click', loadGames);
