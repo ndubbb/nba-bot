@@ -566,38 +566,38 @@
         /* GIANT OBVIOUS PICK BOX */
         .giant-pick-box {
             background: linear-gradient(135deg, rgba(124, 58, 237, 0.25) 0%, rgba(37, 99, 235, 0.15) 100%);
-            border: 3px solid var(--elite);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
+            border: 4px solid var(--elite);
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 28px;
             text-align: center;
-            box-shadow: 0 4px 16px rgba(124, 58, 237, 0.2);
+            box-shadow: 0 8px 32px rgba(124, 58, 237, 0.3);
         }
 
         .giant-pick-label {
-            font-size: 0.75rem;
+            font-size: 1rem;
             text-transform: uppercase;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.15em;
             color: var(--elite);
-            margin-bottom: 8px;
+            margin-bottom: 16px;
             font-weight: 700;
         }
 
         .giant-pick-team {
-            font-size: 1.8rem;
+            font-size: 3.5rem;
             font-weight: 900;
             background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
             line-height: 1.1;
             text-transform: uppercase;
         }
 
         .giant-pick-stars {
-            font-size: 1.5rem;
-            margin-bottom: 8px;
-            filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.4));
+            font-size: 4rem;
+            margin-bottom: 16px;
+            filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.6));
             animation: star-pulse 2s ease-in-out infinite;
         }
 
@@ -607,14 +607,14 @@
         }
 
         .giant-pick-confidence {
-            font-size: 1.2rem;
-            font-weight: 600;
+            font-size: 2.2rem;
+            font-weight: 800;
             color: var(--success);
-            margin-bottom: 6px;
+            margin-bottom: 12px;
         }
 
         .giant-pick-edge {
-            font-size: 0.9rem;
+            font-size: 1.4rem;
             color: var(--text);
             font-weight: 600;
         }
@@ -1841,62 +1841,63 @@
                         reasoning: betFavorite ? 'Model projects bigger blowout → Bet favorite' : 'Model projects closer game → Bet underdog'
                     });
                     
-                  let teamToBet, betLine;
-if (betFavorite) {
-    // Bet the favorite - ALWAYS show with minus sign
-    if (vegasFavoriteIsHome) {
-        teamToBet = game.homeTeam;
-        betLine = `${game.homeTeam} ${game.vegasSpread < 0 ? game.vegasSpread.toFixed(1) : '-' + game.vegasSpread.toFixed(1)}`;
-    } else {
-        teamToBet = game.awayTeam;
-        betLine = `${game.awayTeam} ${game.vegasSpread > 0 ? '-' + game.vegasSpread.toFixed(1) : game.vegasSpread.toFixed(1)}`;
-    }
-} else {
-    // Bet the underdog - ALWAYS show with plus sign
-    if (vegasFavoriteIsHome) {
-        teamToBet = game.awayTeam;
-        betLine = `${game.awayTeam} +${Math.abs(game.vegasSpread).toFixed(1)}`;
-    } else {
-        teamToBet = game.homeTeam;
-        betLine = `${game.homeTeam} +${Math.abs(game.vegasSpread).toFixed(1)}`;
-    }
-}
-```                
-        // Check if underdog should win outright (moneyline play)
-const underdogWinsOutright = !betFavorite && Math.abs(projectedSpread) < 3;
-
-if (underdogWinsOutright) {
-    // Our model projects underdog to WIN → Bet MONEYLINE
-    betLine = `${teamToBet} ML (MONEYLINE)`;
-    console.log('✅ MONEYLINE PLAY:', betLine, '| Model projects upset win');
-    
-    recommendation = {
-        type: 'moneyline',
-        pick: 'underdog',
-        team: teamToBet,
-        line: betLine,
-        edge: spreadEdge + 5, // Bonus edge for moneyline value
-        confidence: confidence + 3, // Slight confidence boost for upset picks
-        vegasSpread: game.vegasSpread,
-        projectedSpread
-    };
-} else {
-    console.log('✅ Elite Bet:', betLine, '| Edge:', spreadEdge.toFixed(1), 'pts');
-    
-    recommendation = {
-        type: 'spread',
-        pick: betFavorite ? 'favorite' : 'underdog',
-        team: teamToBet,
-        line: betLine,
-        edge: spreadEdge,
-        confidence,
-        vegasSpread: game.vegasSpread,
-        projectedSpread
-    };
-}
-```
-
----
+                    let teamToBet, betLine;
+                    
+                    if (betFavorite) {
+                        // Bet the favorite - ALWAYS show with minus sign
+                        if (vegasFavoriteIsHome) {
+                            teamToBet = game.homeTeam;
+                            betLine = `${game.homeTeam} ${game.vegasSpread.toFixed(1)}`;
+                        } else {
+                            teamToBet = game.awayTeam;
+                            // Vegas spread is positive when away is favorite, so make it negative
+                            betLine = `${game.awayTeam} -${Math.abs(game.vegasSpread).toFixed(1)}`;
+                        }
+                    } else {
+                        // Bet the underdog - ALWAYS show with plus sign
+                        if (vegasFavoriteIsHome) {
+                            teamToBet = game.awayTeam;
+                            betLine = `${game.awayTeam} +${Math.abs(game.vegasSpread).toFixed(1)}`;
+                        } else {
+                            teamToBet = game.homeTeam;
+                            betLine = `${game.homeTeam} +${Math.abs(game.vegasSpread).toFixed(1)}`;
+                        }
+                    }
+                    
+                    // Check if underdog should win outright (moneyline play)
+                    const underdogWinsOutright = !betFavorite && Math.abs(projectedSpread) < 3;
+                    
+                    let recommendation;
+                    
+                    if (underdogWinsOutright) {
+                        // Our model projects underdog to WIN → Bet MONEYLINE
+                        betLine = `${teamToBet} ML`;
+                        console.log('✅ MONEYLINE PLAY:', betLine, '| Model projects upset win');
+                        
+                        recommendation = {
+                            type: 'moneyline',
+                            pick: 'underdog',
+                            team: teamToBet,
+                            line: betLine,
+                            edge: spreadEdge + 5,
+                            confidence: Math.min(85, confidence + 3),
+                            vegasSpread: game.vegasSpread,
+                            projectedSpread
+                        };
+                    } else {
+                        console.log('✅ Elite Bet:', betLine, '| Edge:', spreadEdge.toFixed(1), 'pts');
+                        
+                        recommendation = {
+                            type: 'spread',
+                            pick: betFavorite ? 'favorite' : 'underdog',
+                            team: teamToBet,
+                            line: betLine,
+                            edge: spreadEdge,
+                            confidence,
+                            vegasSpread: game.vegasSpread,
+                            projectedSpread
+                        };
+                    }
                 } else if (totalEdge >= CONFIG.minEdge) {
                     const takeOver = projectedTotal > game.vegasTotal;
                     recommendation = {
@@ -2454,3 +2455,4 @@ if (underdogWinsOutright) {
     </script>
 </body>
 </html>
+                
