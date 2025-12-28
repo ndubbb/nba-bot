@@ -1018,14 +1018,14 @@
         // REAL injury data (mock - in production, scrape ESPN injuries)
         const INJURIES = {
             'Lakers': [
-                { player: 'Anthony Davis', status: 'Questionable', impact: -8 }
+                { player: 'Anthony Davis', status: 'Questionable', impact: -5 } // Reduced from -8
             ],
             'Warriors': [
-                { player: 'Andrew Wiggins', status: 'Out', impact: -5 }
+                { player: 'Andrew Wiggins', status: 'Out', impact: -3 } // Reduced from -5
             ],
             '76ers': [
-                { player: 'Joel Embiid', status: 'Out', impact: -12 },
-                { player: 'Paul George', status: 'Questionable', impact: -6 }
+                { player: 'Joel Embiid', status: 'Out', impact: -8 }, // Reduced from -12
+                { player: 'Paul George', status: 'Questionable', impact: -4 } // Reduced from -6
             ],
             // Add more as needed
         };
@@ -1119,7 +1119,7 @@
                         seasonWeight: 0.32,
                         homeAdvantage: 2.8,
                         restAdvantageWeight: 1.3,
-                        injuryImpactWeight: 1.6,
+                        injuryImpactWeight: 0.7, // REDUCED from 1.6 - injuries less dramatic
                         publicFadeBonus: 1.4,
                         rankDiffWeight: 0.8,
                         
@@ -1258,9 +1258,27 @@
                 }
             }
             
-            // If no favorite set, use pick'em
+            // If no favorite set, estimate from team data
             if (!favorite) {
-                favorite = "Pick'em";
+                const awayData = getTeamData(awayTeam);
+                const homeData = getTeamData(homeTeam);
+                
+                // Estimate spread based on rank differential
+                const rankDiff = awayData.rank - homeData.rank;
+                const estimatedSpread = -(rankDiff * 0.3 + homeData.homeAdv);
+                
+                vegasSpread = Math.round(estimatedSpread * 2) / 2; // Round to nearest 0.5
+                vegasTotal = Math.round((awayData.offense + homeData.offense) / 2);
+                
+                if (vegasSpread < -0.5) {
+                    favorite = homeTeam;
+                    favoredTeam = 'home';
+                } else if (vegasSpread > 0.5) {
+                    favorite = awayTeam;
+                    favoredTeam = 'away';
+                } else {
+                    favorite = "Pick'em";
+                }
             }
             
             // Get scores
@@ -1378,22 +1396,48 @@
             
             confidence = Math.min(99, Math.round(confidence));
             
-            // Determine best bet
+            // Determine best bet - FIXED LOGIC
             let recommendation = null;
             
             if (confidence >= CONFIG.minConfidence) {
                 if (spreadEdge >= totalEdge && spreadEdge >= CONFIG.minEdge) {
-                    const takeAway = projectedSpread > game.vegasSpread;
-                    const teamToBet = takeAway ? game.awayTeam : game.homeTeam;
-                    const lineValue = Math.abs(game.vegasSpread).toFixed(1);
+                    // If our projected spread is MORE negative than Vegas (bigger favorite):
+                    // Example: Vegas -6.5, We project -29 → Bet favorite (Celtics -6.5)
+                    // If our projected spread is LESS negative than Vegas (smaller favorite):
+                    // Example: Vegas -14.5, We project -10 → Bet underdog (76ers +14.5)
+                    
+                    const betFavorite = projectedSpread < game.vegasSpread; // Fixed: < not >
+                    
+                    // Determine which team is favored by Vegas
+                    const vegasFavoriteIsHome = game.vegasSpread < 0;
+                    
+                    let teamToBet, betLine;
+                    
+                    if (betFavorite) {
+                        // Bet the favorite
+                        if (vegasFavoriteIsHome) {
+                            teamToBet = game.homeTeam;
+                            betLine = `${game.homeTeam} ${game.vegasSpread.toFixed(1)}`;
+                        } else {
+                            teamToBet = game.awayTeam;
+                            betLine = `${game.awayTeam} ${game.vegasSpread.toFixed(1)}`;
+                        }
+                    } else {
+                        // Bet the underdog
+                        if (vegasFavoriteIsHome) {
+                            teamToBet = game.awayTeam;
+                            betLine = `${game.awayTeam} +${Math.abs(game.vegasSpread).toFixed(1)}`;
+                        } else {
+                            teamToBet = game.homeTeam;
+                            betLine = `${game.homeTeam} +${Math.abs(game.vegasSpread).toFixed(1)}`;
+                        }
+                    }
                     
                     recommendation = {
                         type: 'spread',
-                        pick: takeAway ? 'away' : 'home',
+                        pick: betFavorite ? 'favorite' : 'underdog',
                         team: teamToBet,
-                        line: game.vegasSpread < 0 
-                            ? (takeAway ? `${game.awayTeam} +${lineValue}` : `${game.homeTeam} -${lineValue}`)
-                            : (takeAway ? `${game.awayTeam} -${lineValue}` : `${game.homeTeam} +${lineValue}`),
+                        line: betLine,
                         edge: spreadEdge,
                         confidence,
                         vegasSpread: game.vegasSpread,
