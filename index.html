@@ -1841,40 +1841,62 @@
                         reasoning: betFavorite ? 'Model projects bigger blowout → Bet favorite' : 'Model projects closer game → Bet underdog'
                     });
                     
-                    let teamToBet, betLine;
-                    
-                    if (betFavorite) {
-                        // Bet the favorite
-                        if (vegasFavoriteIsHome) {
-                            teamToBet = game.homeTeam;
-                            betLine = `${game.homeTeam} ${game.vegasSpread.toFixed(1)}`;
-                        } else {
-                            teamToBet = game.awayTeam;
-                            betLine = `${game.awayTeam} ${game.vegasSpread.toFixed(1)}`;
-                        }
-                    } else {
-                        // Bet the underdog
-                        if (vegasFavoriteIsHome) {
-                            teamToBet = game.awayTeam;
-                            betLine = `${game.awayTeam} +${Math.abs(game.vegasSpread).toFixed(1)}`;
-                        } else {
-                            teamToBet = game.homeTeam;
-                            betLine = `${game.homeTeam} +${Math.abs(game.vegasSpread).toFixed(1)}`;
-                        }
-                    }
-                    
-                    console.log('✅ Elite Bet:', betLine, '| Edge:', spreadEdge.toFixed(1), 'pts');
-                    
-                    recommendation = {
-                        type: 'spread',
-                        pick: betFavorite ? 'favorite' : 'underdog',
-                        team: teamToBet,
-                        line: betLine,
-                        edge: spreadEdge,
-                        confidence,
-                        vegasSpread: game.vegasSpread,
-                        projectedSpread
-                    };
+                  let teamToBet, betLine;
+if (betFavorite) {
+    // Bet the favorite - ALWAYS show with minus sign
+    if (vegasFavoriteIsHome) {
+        teamToBet = game.homeTeam;
+        betLine = `${game.homeTeam} ${game.vegasSpread < 0 ? game.vegasSpread.toFixed(1) : '-' + game.vegasSpread.toFixed(1)}`;
+    } else {
+        teamToBet = game.awayTeam;
+        betLine = `${game.awayTeam} ${game.vegasSpread > 0 ? '-' + game.vegasSpread.toFixed(1) : game.vegasSpread.toFixed(1)}`;
+    }
+} else {
+    // Bet the underdog - ALWAYS show with plus sign
+    if (vegasFavoriteIsHome) {
+        teamToBet = game.awayTeam;
+        betLine = `${game.awayTeam} +${Math.abs(game.vegasSpread).toFixed(1)}`;
+    } else {
+        teamToBet = game.homeTeam;
+        betLine = `${game.homeTeam} +${Math.abs(game.vegasSpread).toFixed(1)}`;
+    }
+}
+```                
+        // Check if underdog should win outright (moneyline play)
+const underdogWinsOutright = !betFavorite && Math.abs(projectedSpread) < 3;
+
+if (underdogWinsOutright) {
+    // Our model projects underdog to WIN → Bet MONEYLINE
+    betLine = `${teamToBet} ML (MONEYLINE)`;
+    console.log('✅ MONEYLINE PLAY:', betLine, '| Model projects upset win');
+    
+    recommendation = {
+        type: 'moneyline',
+        pick: 'underdog',
+        team: teamToBet,
+        line: betLine,
+        edge: spreadEdge + 5, // Bonus edge for moneyline value
+        confidence: confidence + 3, // Slight confidence boost for upset picks
+        vegasSpread: game.vegasSpread,
+        projectedSpread
+    };
+} else {
+    console.log('✅ Elite Bet:', betLine, '| Edge:', spreadEdge.toFixed(1), 'pts');
+    
+    recommendation = {
+        type: 'spread',
+        pick: betFavorite ? 'favorite' : 'underdog',
+        team: teamToBet,
+        line: betLine,
+        edge: spreadEdge,
+        confidence,
+        vegasSpread: game.vegasSpread,
+        projectedSpread
+    };
+}
+```
+
+---
                 } else if (totalEdge >= CONFIG.minEdge) {
                     const takeOver = projectedTotal > game.vegasTotal;
                     recommendation = {
