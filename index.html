@@ -1260,6 +1260,8 @@
             
             // If no favorite set, estimate from team data
             if (!favorite) {
+                console.warn('⚠️ No odds from ESPN for:', awayTeam, '@', homeTeam);
+                
                 const awayData = getTeamData(awayTeam);
                 const homeData = getTeamData(homeTeam);
                 
@@ -1270,6 +1272,13 @@
                 vegasSpread = Math.round(estimatedSpread * 2) / 2; // Round to nearest 0.5
                 vegasTotal = Math.round((awayData.offense + homeData.offense) / 2);
                 
+                console.log('📊 Estimated odds:', {
+                    spread: vegasSpread,
+                    total: vegasTotal,
+                    awayRank: awayData.rank,
+                    homeRank: homeData.rank
+                });
+                
                 if (vegasSpread < -0.5) {
                     favorite = homeTeam;
                     favoredTeam = 'home';
@@ -1279,6 +1288,8 @@
                 } else {
                     favorite = "Pick'em";
                 }
+            } else {
+                console.log('✅ ESPN odds loaded:', awayTeam, '@', homeTeam, '→', favorite, vegasSpread);
             }
             
             // Get scores
@@ -1396,7 +1407,7 @@
             
             confidence = Math.min(99, Math.round(confidence));
             
-            // Determine best bet - FIXED LOGIC
+            // Determine best bet - FIXED LOGIC WITH DEBUGGING
             let recommendation = null;
             
             if (confidence >= CONFIG.minConfidence) {
@@ -1410,6 +1421,15 @@
                     
                     // Determine which team is favored by Vegas
                     const vegasFavoriteIsHome = game.vegasSpread < 0;
+                    
+                    console.log('🎲 Bet Decision:', {
+                        game: `${game.awayTeam} @ ${game.homeTeam}`,
+                        vegasSpread: game.vegasSpread,
+                        projectedSpread: projectedSpread,
+                        betFavorite: betFavorite,
+                        vegasFavoriteIsHome: vegasFavoriteIsHome,
+                        reasoning: betFavorite ? 'Model projects bigger blowout → Bet favorite' : 'Model projects closer game → Bet underdog'
+                    });
                     
                     let teamToBet, betLine;
                     
@@ -1432,6 +1452,8 @@
                             betLine = `${game.homeTeam} +${Math.abs(game.vegasSpread).toFixed(1)}`;
                         }
                     }
+                    
+                    console.log('✅ Elite Bet:', betLine, '| Edge:', spreadEdge.toFixed(1), 'pts');
                     
                     recommendation = {
                         type: 'spread',
@@ -1673,10 +1695,15 @@
                                 ${a.publicBetting.percentage}%
                             </div>
                         </div>
-                        <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
-                            <span>Heavily on ${game.favorite}</span>
-                            ${a.publicBetting.fade ? '<span class="fade-indicator">✅ FADE</span>' : ''}
+                        <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-top: 8px;">
+                            <span style="color: var(--text-dim);">
+                                <strong style="color: var(--warning);">${game.favorite !== "Pick'em" ? game.favorite : game.homeTeam}</strong>: ${a.publicBetting.percentage}%
+                            </span>
+                            <span style="color: var(--text-dim);">
+                                <strong>${game.favorite !== "Pick'em" ? (game.favoredTeam === 'home' ? game.awayTeam : game.homeTeam) : game.awayTeam}</strong>: ${100 - a.publicBetting.percentage}%
+                            </span>
                         </div>
+                        ${a.publicBetting.fade ? '<div style="margin-top: 8px; text-align: center;"><span class="fade-indicator">✅ FADE THE PUBLIC (70%+ on one side)</span></div>' : ''}
                     </div>
 
                     <div class="vegas-odds">
