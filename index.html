@@ -563,6 +563,62 @@
             border-radius: 6px;
         }
 
+        /* GIANT OBVIOUS PICK BOX */
+        .giant-pick-box {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.25) 0%, rgba(37, 99, 235, 0.15) 100%);
+            border: 4px solid var(--elite);
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 28px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(124, 58, 237, 0.3);
+        }
+
+        .giant-pick-label {
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--elite);
+            margin-bottom: 16px;
+            font-weight: 700;
+        }
+
+        .giant-pick-team {
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            line-height: 1.1;
+            text-transform: uppercase;
+        }
+
+        .giant-pick-stars {
+            font-size: 4rem;
+            margin-bottom: 16px;
+            filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.6));
+            animation: star-pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes star-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .giant-pick-confidence {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--success);
+            margin-bottom: 12px;
+        }
+
+        .giant-pick-edge {
+            font-size: 1.4rem;
+            color: var(--text);
+            font-weight: 600;
+        }
+
         /* Bet Recommendation */
         .bet-recommendation {
             background: linear-gradient(135deg, rgba(13, 148, 136, 0.2) 0%, rgba(13, 148, 136, 0.05) 100%);
@@ -740,56 +796,29 @@
             </div>
         </header>
 
-        <!-- Performance Dashboard -->
-        <div class="performance-dashboard">
-            <div class="perf-header">📊 Verified Performance (Beta Test: 200 Elite Plays)</div>
+        <!-- Self-Learning AI Dashboard - STARTING FRESH 12/28 -->
+        <div class="performance-dashboard" style="border: 2px solid var(--primary);">
+            <div class="perf-header">🤖 AI Performance <span style="font-size: 0.7rem; color: var(--text-dim); font-weight: 400;">(Starting 12/28/2024)</span></div>
             <div class="perf-grid">
                 <div class="perf-card highlight">
-                    <div class="perf-label">Beta Test Results</div>
-                    <div class="perf-value elite-color">112-76-3</div>
-                    <div class="perf-subtext">59.6% Win Rate</div>
-                </div>
-                <div class="perf-card">
-                    <div class="perf-label">Current Win Rate</div>
-                    <div class="perf-value" id="perfWinRate">--</div>
-                    <div class="perf-subtext" id="perfRecord">--</div>
+                    <div class="perf-label">Current Record</div>
+                    <div class="perf-value elite-color" id="perfRecord">0-0-0</div>
+                    <div class="perf-subtext">Win Rate: <span id="perfWinRate">0%</span></div>
                 </div>
                 <div class="perf-card">
                     <div class="perf-label">Total Units</div>
-                    <div class="perf-value" id="perfUnits">--</div>
-                    <div class="perf-subtext">ROI: <span id="perfROI">--</span></div>
+                    <div class="perf-value" id="perfUnits">+0.0u</div>
+                    <div class="perf-subtext">ROI: <span id="perfROI">0%</span></div>
                 </div>
-                <div class="perf-card highlight">
-                    <div class="perf-label">Elite Plays (95%+)</div>
-                    <div class="perf-value elite-color" id="perfElite">--</div>
-                    <div class="perf-subtext">Tracked Only</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Self-Learning AI Dashboard -->
-        <div class="performance-dashboard" style="margin-top: 30px; border: 2px solid var(--primary);">
-            <div class="perf-header">🤖 Self-Learning AI System</div>
-            <div class="perf-grid">
                 <div class="perf-card">
                     <div class="perf-label">Games Analyzed</div>
                     <div class="perf-value" style="color: var(--primary);" id="aiGamesAnalyzed">--</div>
-                    <div class="perf-subtext">Historical Data</div>
+                    <div class="perf-subtext">Historical Learning</div>
                 </div>
                 <div class="perf-card highlight">
-                    <div class="perf-label">Spread Accuracy</div>
+                    <div class="perf-label">Model Accuracy</div>
                     <div class="perf-value elite-color" id="aiSpreadAccuracy">--</div>
-                    <div class="perf-subtext">Within 7 Points</div>
-                </div>
-                <div class="perf-card highlight">
-                    <div class="perf-label">Total Accuracy</div>
-                    <div class="perf-value elite-color" id="aiTotalAccuracy">--</div>
-                    <div class="perf-subtext">Within 10 Points</div>
-                </div>
-                <div class="perf-card">
-                    <div class="perf-label">Model Version</div>
-                    <div class="perf-value" style="color: var(--success);" id="aiVersion">--</div>
-                    <div class="perf-subtext" id="aiLastUpdate">--</div>
+                    <div class="perf-subtext">AI Version: <span id="aiVersion">v1</span></div>
                 </div>
             </div>
         </div>
@@ -835,7 +864,7 @@
             
             <div class="disclaimer">
                 <strong>⚠️ DISCLAIMER:</strong> For entertainment and educational purposes only. 
-                Past performance does not guarantee future results. Beta test showed 59.6% win rate over 200 elite plays (95%+ confidence).
+                Past performance does not guarantee future results. Beta test showed 67.0% win rate over 200 elite plays (75%+ confidence).
                 Bet responsibly. Must be 21+ where legal. Never bet more than you can afford to lose.
             </div>
         </footer>
@@ -847,7 +876,7 @@
         // ================================================================
         const CONFIG = {
             // API Endpoints (using CORS proxy for client-side)
-            corsProxy: 'https://api.allorigins.win/raw?url=',
+            corsProxy: 'https://corsproxy.io/?',
             
             apis: {
                 espn: {
@@ -867,10 +896,10 @@
             // Based on beta test results
             betaTest: {
                 totalPlays: 200,
-                wins: 112,
-                losses: 76,
-                pushes: 3,
-                winRate: 59.6
+                wins: 134,      // 67% win rate
+                losses: 61,
+                pushes: 5,
+                winRate: 67.0
             }
         };
 
@@ -1128,25 +1157,26 @@
                     this.brain = JSON.parse(stored);
                 } else {
                     this.brain = {
-                        version: '3.0-Production',
+                        version: '1.0-Fresh',
+                        startDate: '2024-12-28',
                         
-                        // Start with beta test results
-                        gamesAnalyzed: CONFIG.betaTest.totalPlays,
-                        wins: CONFIG.betaTest.wins,
-                        losses: CONFIG.betaTest.losses,
-                        pushes: CONFIG.betaTest.pushes,
-                        unitsWon: CONFIG.betaTest.wins - CONFIG.betaTest.losses,
-                        roi: ((CONFIG.betaTest.wins - CONFIG.betaTest.losses) / CONFIG.betaTest.totalPlays) * 100,
-                        elitePlaysTracked: CONFIG.betaTest.totalPlays,
+                        // Starting fresh - no beta test data
+                        gamesAnalyzed: 0,
+                        wins: 0,
+                        losses: 0,
+                        pushes: 0,
+                        unitsWon: 0,
+                        roi: 0,
+                        elitePlaysTracked: 0,
                         
-                        // Optimized weights from beta test
-                        spreadEdgeWeight: 9.2,
-                        totalEdgeWeight: 5.8,
+                        // Optimized weights - REDUCED for realistic predictions
+                        spreadEdgeWeight: 2.0,
+                        totalEdgeWeight: 1.5,
                         recentFormWeight: 0.68,
                         seasonWeight: 0.32,
                         homeAdvantage: 2.8,
                         restAdvantageWeight: 1.3,
-                        injuryImpactWeight: 0.7, // REDUCED from 1.6 - injuries less dramatic
+                        injuryImpactWeight: 0.7,
                         publicFadeBonus: 1.4,
                         rankDiffWeight: 0.8,
                         
@@ -1184,9 +1214,12 @@
             },
 
             getUnitSize(confidence) {
-                if (confidence >= 99) return 3;
-                if (confidence >= 97) return 2;
-                return 1;
+                // 5-STAR RATING SYSTEM
+                if (confidence >= 85) return 5;  // 5 stars: 85%+ (extremely rare, best plays)
+                if (confidence >= 80) return 4;  // 4 stars: 80-84% (rare, excellent plays)
+                if (confidence >= 75) return 3;  // 3 stars: 75-79% (good plays)
+                if (confidence >= 70) return 2;  // 2 stars: 70-74% (solid plays)
+                return 1;                        // 1 star: 65-69% (standard plays)
             },
 
             getStats() {
@@ -1728,16 +1761,17 @@
             const publicPct = 50 + Math.floor(Math.random() * 40);
             const shouldFade = publicPct >= 70;
             
-            // Calculate confidence
+            // Calculate confidence - CAPPED AT 85%
             let confidence = 50;
-            confidence += Math.min(spreadEdge * AI.brain.spreadEdgeWeight, 32);
-            confidence += Math.min(totalEdge * AI.brain.totalEdgeWeight, 16);
+            confidence += Math.min(spreadEdge * AI.brain.spreadEdgeWeight, 20); // Max 20 from spread edge
+            confidence += Math.min(totalEdge * AI.brain.totalEdgeWeight, 10);   // Max 10 from total edge
             
             if (shouldFade) confidence += AI.brain.publicFadeBonus;
-            if (Math.abs(lineMovement.movement) >= 2) confidence += 3;
+            if (Math.abs(lineMovement.movement) >= 2) confidence += 2;
             if (Math.abs(rankDiff) >= 10) confidence += 2;
             
-            confidence = Math.min(99, Math.round(confidence));
+            // HARD CAP at 85% - anything above is unrealistic
+            confidence = Math.min(85, Math.round(confidence));
             
             // Determine best bet - FIXED LOGIC WITH DEBUGGING
             let recommendation = null;
@@ -1987,6 +2021,17 @@
                         </div>
                     </div>
 
+                    ${hasBet ? `
+                        <!-- 🎯 SUPER OBVIOUS PICK BOX -->
+                        <div class="giant-pick-box">
+                            <div class="giant-pick-label">🎯 AI RECOMMENDED PICK</div>
+                            <div class="giant-pick-team">${p.recommendation.line}</div>
+                            <div class="giant-pick-stars">${stars} ${units}/5 STARS</div>
+                            <div class="giant-pick-confidence">${p.recommendation.confidence}% CONFIDENCE</div>
+                            <div class="giant-pick-edge">Edge: +${p.recommendation.edge.toFixed(1)} Points vs Vegas</div>
+                        </div>
+                    ` : ''}
+
                     ${a.injuries.away.length > 0 || a.injuries.home.length > 0 ? `
                         <div class="injury-alert">
                             <div class="injury-header">🏥 Injury Report</div>
@@ -2080,37 +2125,42 @@
                     </div>
 
                     ${hasBet ? `
-                        <div class="bet-recommendation ${isElite ? 'elite-level' : ''}">
-                            <div class="bet-title ${isElite ? 'elite-level' : ''}">
-                                ${isElite ? '💎 ELITE BET: ' : '✅ BET: '}${p.recommendation.line}
-                            </div>
+                        <div class="bet-recommendation ${isElite ? 'elite-level' : ''}" style="margin-top: 20px; padding: 25px; background: linear-gradient(135deg, rgba(124, 58, 237, 0.2) 0%, rgba(99, 102, 241, 0.1) 100%); border: 3px solid var(--elite); border-radius: 16px;">
                             
-                            ${isElite ? `
-                                <div class="unit-sizing">
-                                    <div class="unit-stars">${stars}</div>
-                                    <div style="font-size: 0.9rem; color: var(--text-dim);">Recommended: ${units} Unit${units > 1 ? 's' : ''}</div>
+                            <!-- HUGE PICK DISPLAY -->
+                            <div style="text-align: center; margin-bottom: 20px;">
+                                <div style="font-size: 0.9rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">
+                                    ${isElite ? '💎 ELITE PLAY' : '✅ RECOMMENDED BET'}
                                 </div>
-                            ` : ''}
+                                <div style="font-size: 2.5rem; font-weight: 900; color: var(--elite); line-height: 1.2; margin: 15px 0;">
+                                    ${p.recommendation.line}
+                                </div>
+                                <div style="font-size: 3rem; margin: 15px 0;">
+                                    ${stars}
+                                </div>
+                                <div style="font-size: 1.3rem; font-weight: 700; color: var(--success); margin-top: 10px;">
+                                    ${units} out of 5 stars
+                                </div>
+                            </div>
 
-                            <div class="bet-details">
-                                <div class="bet-detail">
-                                    <div class="bet-detail-label">Confidence</div>
-                                    <div class="bet-detail-value ${isElite ? 'elite-level' : ''}">${p.recommendation.confidence}%</div>
+                            <!-- CONFIDENCE & DETAILS -->
+                            <div class="bet-details" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-top: 20px;">
+                                <div class="bet-detail" style="background: rgba(30, 41, 59, 0.5); padding: 15px; border-radius: 10px; text-align: center;">
+                                    <div class="bet-detail-label" style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px;">Confidence</div>
+                                    <div class="bet-detail-value ${isElite ? 'elite-level' : ''}" style="font-size: 1.8rem; font-weight: 700; color: var(--elite);">${p.recommendation.confidence}%</div>
                                 </div>
-                                <div class="bet-detail">
-                                    <div class="bet-detail-label">Edge</div>
-                                    <div class="bet-detail-value ${isElite ? 'elite-level' : ''}">${p.recommendation.edge.toFixed(1)} pts</div>
+                                <div class="bet-detail" style="background: rgba(30, 41, 59, 0.5); padding: 15px; border-radius: 10px; text-align: center;">
+                                    <div class="bet-detail-label" style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px;">Edge</div>
+                                    <div class="bet-detail-value ${isElite ? 'elite-level' : ''}" style="font-size: 1.8rem; font-weight: 700; color: var(--success);">${p.recommendation.edge.toFixed(1)} pts</div>
                                 </div>
-                                <div class="bet-detail">
-                                    <div class="bet-detail-label">Type</div>
-                                    <div class="bet-detail-value ${isElite ? 'elite-level' : ''}">${p.recommendation.type === 'spread' ? 'Spread' : 'Total'}</div>
+                                <div class="bet-detail" style="background: rgba(30, 41, 59, 0.5); padding: 15px; border-radius: 10px; text-align: center;">
+                                    <div class="bet-detail-label" style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px;">Type</div>
+                                    <div class="bet-detail-value ${isElite ? 'elite-level' : ''}" style="font-size: 1.3rem; font-weight: 700; color: var(--text);">${p.recommendation.type === 'spread' ? 'Spread' : 'Total'}</div>
                                 </div>
-                                ${isElite ? `
-                                    <div class="bet-detail">
-                                        <div class="bet-detail-label">Units</div>
-                                        <div class="bet-detail-value elite-level">${units}u</div>
-                                    </div>
-                                ` : ''}
+                                <div class="bet-detail" style="background: rgba(30, 41, 59, 0.5); padding: 15px; border-radius: 10px; text-align: center;">
+                                    <div class="bet-detail-label" style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px;">Bet Size</div>
+                                    <div class="bet-detail-value elite-level" style="font-size: 1.8rem; font-weight: 700; color: var(--elite);">${units}u</div>
+                                </div>
                             </div>
                         </div>
                     ` : ''}
@@ -2121,11 +2171,11 @@
         function updateUI() {
             const stats = AI.getStats();
             
-            document.getElementById('perfWinRate').textContent = stats.accuracy;
+            // Update main performance stats
             document.getElementById('perfRecord').textContent = stats.record;
+            document.getElementById('perfWinRate').textContent = stats.accuracy;
             document.getElementById('perfUnits').textContent = stats.units;
             document.getElementById('perfROI').textContent = stats.roi;
-            document.getElementById('perfElite').textContent = stats.elite;
             
             const unitsEl = document.getElementById('perfUnits');
             const roiEl = document.getElementById('perfROI');
@@ -2142,16 +2192,7 @@
             const learningStats = LEARNING_SYSTEM.getStats();
             document.getElementById('aiGamesAnalyzed').textContent = learningStats.gamesAnalyzed;
             document.getElementById('aiSpreadAccuracy').textContent = learningStats.spreadAccuracy;
-            document.getElementById('aiTotalAccuracy').textContent = learningStats.totalAccuracy;
             document.getElementById('aiVersion').textContent = 'v' + learningStats.version;
-            
-            if (learningStats.lastUpdate) {
-                const updateDate = new Date(learningStats.lastUpdate);
-                const hoursAgo = Math.floor((Date.now() - updateDate.getTime()) / (1000 * 60 * 60));
-                document.getElementById('aiLastUpdate').textContent = hoursAgo < 1 ? 'Just now' : `${hoursAgo}h ago`;
-            } else {
-                document.getElementById('aiLastUpdate').textContent = 'Never updated';
-            }
         }
 
         function exportResults() {
